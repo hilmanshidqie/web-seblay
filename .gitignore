@@ -1,0 +1,34 @@
+# dependencies
+node_modules
+
+# Next.js build output
+.next
+out
+build
+
+# TypeScript / Next generated
+next-env.d.ts
+*.tsbuildinfo
+
+# environment files (secrets) — keep only an example template if one is added
+.env*
+!.env.example
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# testing
+coverage
+
+# deployment
+.vercel
+
+# certificates / keys
+*.pem
+
+# OS / editor
+.DS_Store
+Thumbs.db

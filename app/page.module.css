@@ -1,0 +1,977 @@
+/*
+ * Desktop (≥ 768px): a 1:1 reproduction of the 1440 × 2348 Figma frame.
+ * Every coordinate is in design pixels and multiplied by --u, which equals
+ * 1px at a 1440px-wide viewport and scales proportionally at other widths.
+ *
+ * Mobile (< 768px): the same elements fall back into a stacked flow.
+ */
+
+.page {
+  container-type: inline-size;
+  width: 100%;
+  overflow: hidden;
+}
+
+.canvas {
+  --u: calc(100cqw / 1440);
+  position: relative;
+  width: calc(1440 * var(--u));
+  height: calc(2348 * var(--u));
+  overflow: hidden;
+  background: var(--color-paper);
+}
+
+.header,
+.main,
+.hero,
+.formSection,
+.footer,
+.headline {
+  display: contents;
+}
+
+.abs {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  z-index: var(--z, auto);
+}
+
+.sized {
+  height: calc(var(--h) * var(--u));
+}
+
+.cover {
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.rotBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ---------- Typography ---------- */
+
+.textThin12 {
+  font-family: var(--font-mono), monospace;
+  font-weight: 100;
+  font-size: calc(12 * var(--u));
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.upper {
+  text-transform: uppercase;
+}
+
+/* ---------- Header ---------- */
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(10 * var(--u));
+  font-size: calc(12 * var(--u));
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.nav {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: calc(41 * var(--u));
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(8 * var(--u)) calc(16 * var(--u));
+  font-size: calc(12 * var(--u));
+  font-weight: 400;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.dot {
+  width: calc(23 * var(--u));
+}
+
+.menu {
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.menu img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ---------- Hero ---------- */
+
+.headlineTop,
+.headlineBottom {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 400;
+  line-height: normal;
+  white-space: pre;
+}
+
+.headlineTop {
+  font-size: calc(160 * var(--u));
+}
+
+.headlineBottom {
+  font-size: calc(240 * var(--u));
+}
+
+.ellipseImg {
+  flex: none;
+  width: calc(812 * var(--u));
+  height: calc(185 * var(--u));
+  transform: rotate(-10.13deg);
+}
+
+.handArrowImg {
+  flex: none;
+  width: calc(142 * var(--u));
+  height: calc(142 * var(--u));
+  transform: rotate(-26.39deg);
+}
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8 * var(--u));
+  padding: calc(16 * var(--u)) calc(32 * var(--u));
+  border: 1px solid var(--color-border);
+  border-radius: calc(40 * var(--u));
+  font-size: calc(20 * var(--u));
+  font-weight: 400;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.ctaIcon {
+  width: calc(20 * var(--u));
+  height: calc(20 * var(--u));
+}
+
+.seni {
+  font-family: var(--font-mono), monospace;
+  font-weight: 100;
+  font-size: calc(40 * var(--u));
+  line-height: normal;
+  white-space: nowrap;
+}
+
+/* ---------- Form section ---------- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(8 * var(--u));
+  margin: 0;
+}
+
+.formTitle {
+  font-family: var(--font-display), sans-serif;
+  font-weight: 400;
+  line-height: normal;
+}
+
+.formTitleSmall {
+  font-size: calc(40 * var(--u));
+}
+
+.formTitleLarge {
+  font-size: calc(80 * var(--u));
+  white-space: pre;
+}
+
+.formBody {
+  display: flex;
+  flex-direction: column;
+  gap: calc(4 * var(--u));
+  width: 100%;
+}
+
+.formNote {
+  font-weight: 100;
+  font-size: calc(12 * var(--u));
+  line-height: calc(24 * var(--u));
+  color: var(--color-alert);
+  white-space: nowrap;
+}
+
+.formRow {
+  display: flex;
+  align-items: flex-start;
+  gap: calc(8 * var(--u));
+  width: 100%;
+}
+
+.formField {
+  flex: 1 0 0;
+  min-width: 0;
+  height: calc(121 * var(--u));
+  padding: calc(8 * var(--u)) calc(56 * var(--u)) calc(8 * var(--u)) calc(12 * var(--u));
+  border: 1px solid var(--color-field-border);
+  border-radius: calc(20 * var(--u));
+  background: #ffffff;
+  font-size: calc(16 * var(--u));
+  font-weight: 400;
+  line-height: calc(24 * var(--u));
+  resize: none;
+}
+
+.formField::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+}
+
+.formSubmit {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(78 * var(--u));
+  height: calc(121 * var(--u));
+  padding: calc(8 * var(--u)) calc(16 * var(--u));
+  border: 1px solid var(--color-border);
+  border-radius: calc(40 * var(--u));
+  background: var(--color-button);
+  color: var(--color-paper);
+  font-size: calc(12 * var(--u));
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.disclaimer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(10 * var(--u));
+  border: 1px solid var(--color-border-soft);
+  font-weight: 100;
+  font-size: calc(12 * var(--u));
+  line-height: calc(18 * var(--u));
+  white-space: nowrap;
+}
+
+.loading {
+  overflow: hidden;
+}
+
+/* Vector sits at a 12.5% inset; the exported SVG includes its stroke bleed. */
+.loadingRing {
+  position: absolute;
+  left: calc(58.125 * var(--u));
+  top: calc(58.125 * var(--u));
+  width: calc(360.75 * var(--u));
+  height: calc(360.75 * var(--u));
+}
+
+.loadingText {
+  position: absolute;
+  left: calc(83 * var(--u));
+  top: calc(213 * var(--u));
+  width: calc(312 * var(--u));
+  font-weight: 200;
+  font-size: calc(20 * var(--u));
+  line-height: normal;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.loadingBusy .loadingRing {
+  animation: spin 1.4s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loadingBusy .loadingRing {
+    animation: none;
+  }
+}
+
+/* Excuse result card — Figma "after submit" frame. Inner coordinates are
+   relative to the 838 × 698 paper image. */
+
+.cardPaper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+}
+
+.cardText {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  display: flex;
+  flex-direction: column;
+  gap: calc(24 * var(--u));
+  width: calc(630 * var(--u));
+  transform: rotate(-4.69deg);
+  transform-origin: 0 0;
+  font-family: var(--font-serif), serif;
+  font-weight: 500;
+  font-size: calc(24 * var(--u));
+  line-height: normal;
+}
+
+.cardMuted {
+  color: #6a6969;
+}
+
+.cardBody {
+  color: var(--color-ink);
+}
+
+.cardClosing {
+  margin-top: calc(18 * var(--u));
+}
+
+.cardActions {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  width: calc(var(--w) * var(--u));
+  height: calc(var(--h) * var(--u));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cardActionsRow {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: calc(20 * var(--u));
+  transform: rotate(-4.52deg);
+}
+
+.copyButton,
+.anotherPill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(8 * var(--u)) calc(16 * var(--u));
+  border: 1px solid var(--color-border);
+  border-radius: calc(40 * var(--u));
+  font-family: var(--font-mono), monospace;
+  font-size: calc(12 * var(--u));
+  font-weight: 400;
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.copyButton {
+  background: #f0ece2;
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+.anotherButton {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.anotherPill {
+  background: #3f3c36;
+  color: #f0ede3;
+}
+
+.anotherIcon {
+  width: calc(32 * var(--u));
+  height: calc(32 * var(--u));
+  transform: rotate(0.6deg);
+}
+
+.copyFeedback {
+  position: absolute;
+  left: calc(var(--x) * var(--u));
+  top: calc(var(--y) * var(--u));
+  font-weight: 100;
+  font-size: calc(12 * var(--u));
+  line-height: calc(24 * var(--u));
+  color: #6a6969;
+  white-space: nowrap;
+}
+
+.copyError {
+  color: var(--color-alert);
+}
+
+.verticalText {
+  flex: none;
+  transform: rotate(-90deg);
+  font-family: var(--font-serif), serif;
+  font-size: calc(40 * var(--u));
+  line-height: normal;
+  white-space: nowrap;
+}
+
+/* ---------- Footer ---------- */
+
+.band {
+  background: var(--color-night);
+}
+
+.berlibur {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.berliburText {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-display), sans-serif;
+  font-size: calc(200 * var(--u));
+  line-height: normal;
+  white-space: nowrap;
+  color: transparent;
+  /* Figma: 1px #EFEDE9 stroke, outside, on a transparent fill */
+  -webkit-text-stroke: 1px var(--color-paper);
+  paint-order: stroke fill;
+}
+
+.divider {
+  position: absolute;
+  left: calc(2 * var(--u));
+  top: calc(209 * var(--u));
+  width: calc(1207 * var(--u));
+  height: 2px;
+}
+
+.congrats {
+  font-family: var(--font-script), cursive;
+  font-size: calc(160 * var(--u));
+  line-height: normal;
+  color: var(--color-paper);
+  white-space: nowrap;
+}
+
+.footerLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: calc(8 * var(--u)) calc(16 * var(--u));
+  font-size: calc(24 * var(--u));
+  font-weight: 400;
+  line-height: normal;
+  color: var(--color-cream);
+  white-space: nowrap;
+}
+
+.otherCollection {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--u));
+}
+
+.arrowRight {
+  width: calc(24 * var(--u));
+  height: calc(24 * var(--u));
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: calc(12 * var(--u));
+}
+
+.emailPill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: calc(8 * var(--u)) calc(16 * var(--u));
+  border: 1px solid var(--color-border);
+  border-radius: calc(40 * var(--u));
+  background: var(--color-pill);
+  font-family: var(--font-condensed), sans-serif;
+  font-size: calc(36 * var(--u));
+  line-height: normal;
+  color: var(--color-paper);
+  white-space: nowrap;
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease;
+}
+
+/* Hover/focus: invert to an off-white pill with charcoal text. */
+.emailPill:hover,
+.emailPill:focus-visible {
+  background: var(--color-paper);
+  border-color: var(--color-paper);
+  color: var(--color-pill);
+}
+
+.emailPill:focus-visible {
+  outline: 2px solid var(--color-paper);
+  outline-offset: 3px;
+}
+
+/*
+ * Underline reveal: a line under the text that draws in from the left on
+ * hover/focus and retracts to the right on leave. It sits inside the link's
+ * padding box, so nothing around it moves. --ul-left / --ul-right match the
+ * horizontal padding (overridden on mobile where that padding is removed).
+ */
+.underline {
+  position: relative;
+}
+
+.underline::after {
+  content: "";
+  position: absolute;
+  left: var(--ul-left, calc(16 * var(--u)));
+  right: var(--ul-right, calc(16 * var(--u)));
+  bottom: var(--ul-bottom);
+  height: var(--ul-size);
+  background: var(--ul-color);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform 0.5s cubic-bezier(0.65, 0, 0.35, 1);
+  pointer-events: none;
+}
+
+.navLink.underline {
+  --ul-bottom: calc(5 * var(--u));
+  --ul-size: max(1px, calc(1.5 * var(--u)));
+  --ul-color: var(--color-border);
+}
+
+.footerLink.underline {
+  --ul-bottom: calc(3 * var(--u));
+  --ul-size: max(2px, calc(3 * var(--u)));
+  --ul-color: rgba(239, 236, 226, 0.75);
+}
+
+.underline:focus-visible::after,
+.otherCollection:focus-visible .underline::after {
+  transform: scaleX(1);
+  transform-origin: left center;
+}
+
+@media (hover: hover) {
+  .underline:hover::after,
+  .otherCollection:hover .underline::after {
+    transform: scaleX(1);
+    transform-origin: left center;
+  }
+}
+
+.underline:focus-visible,
+.otherCollection:focus-visible {
+  outline: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emailPill,
+  .underline::after {
+    transition: none;
+  }
+}
+
+.signature {
+  width: 100%;
+  font-size: calc(12 * var(--u));
+  font-weight: 400;
+  line-height: normal;
+  color: var(--color-muted);
+  text-align: center;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.socials {
+  display: flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+}
+
+.copyright {
+  justify-content: flex-start;
+  width: calc(450 * var(--u));
+  height: calc(48 * var(--u));
+}
+
+/* ---------- Mobile: stacked flow ---------- */
+
+@media (max-width: 767px) {
+  .canvas {
+    --u: 1px;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+
+  .abs {
+    position: relative;
+    left: auto;
+    top: auto;
+    width: auto;
+    z-index: auto;
+  }
+
+  .sized {
+    height: auto;
+  }
+
+  .header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px 16px;
+    padding: 20px 16px 0;
+  }
+
+  .logo {
+    order: 1;
+    padding: 10px 0;
+  }
+
+  .menu {
+    order: 2;
+    width: 18px;
+    height: 19.127px;
+  }
+
+  .nav {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  .navLink:first-child {
+    --ul-left: 0px;
+    padding-left: 0;
+  }
+
+  .navLink:last-child {
+    --ul-right: 0px;
+    padding-right: 0;
+  }
+
+  .dot {
+    order: 4;
+    width: 23px;
+    height: 23px;
+  }
+
+  .tagline {
+    order: 5;
+    flex: 1;
+  }
+
+  .hero,
+  .formSection {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 32px 16px;
+  }
+
+  .textThin12 {
+    white-space: normal;
+  }
+
+  .index {
+    order: 1;
+  }
+
+  .eksistensi {
+    order: 2;
+  }
+
+  .woman {
+    order: 3;
+    width: 204px;
+    height: auto;
+  }
+
+  .sticky {
+    order: 4;
+    align-self: flex-end;
+    width: 180px;
+    height: auto;
+    margin-top: -120px;
+  }
+
+  .selamat {
+    order: 5;
+  }
+
+  .headline {
+    order: 6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .headlineTop {
+    font-size: 16.5vw;
+    white-space: nowrap;
+  }
+
+  .headlineBottom {
+    font-size: 30vw;
+    line-height: 0.9;
+  }
+
+  .ellipse,
+  .handArrow {
+    display: none;
+  }
+
+  .tv {
+    order: 7;
+    align-self: flex-end;
+    width: 70%;
+    height: auto;
+  }
+
+  .random {
+    order: 8;
+  }
+
+  .cta {
+    order: 9;
+    align-self: center;
+    width: auto;
+    height: auto;
+    font-size: 16px;
+    padding: 14px 28px;
+  }
+
+  .chevrons {
+    order: 10;
+    align-self: center;
+    width: 40px;
+    height: auto;
+  }
+
+  .mencari {
+    order: 11;
+  }
+
+  .saturn {
+    order: 12;
+    width: 100%;
+    height: auto;
+  }
+
+  .mountains {
+    order: 13;
+    width: calc(100% + 32px);
+    max-width: none;
+    height: auto;
+    margin: 0 -16px;
+  }
+
+  .seni {
+    order: 14;
+    font-size: 24px;
+    white-space: normal;
+  }
+
+  .form {
+    order: 1;
+    width: 100%;
+  }
+
+  .formTitleSmall {
+    font-size: 28px;
+  }
+
+  .formTitleLarge {
+    font-size: 56px;
+  }
+
+  .formNote {
+    white-space: normal;
+  }
+
+  .formField {
+    height: 121px;
+    padding-right: 12px;
+  }
+
+  .disclaimer {
+    order: 2;
+    width: 100%;
+    white-space: normal;
+  }
+
+  .loading {
+    order: 3;
+    align-self: center;
+    width: 100%;
+    max-width: 477px;
+    aspect-ratio: 1;
+    height: auto;
+  }
+
+  .loadingRing {
+    left: 12.2%;
+    top: 12.2%;
+    width: 75.6%;
+    height: 75.6%;
+  }
+
+  .loadingText {
+    left: 0;
+    top: 50%;
+    width: 100%;
+    transform: translateY(-50%);
+    font-size: 16px;
+  }
+
+  /* Keep the card's internal composition; scale it to the column width. */
+  .card {
+    --u: calc((100cqw - 32px) / 838);
+    order: 3;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 838 / 698;
+  }
+
+  .vertical {
+    order: 4;
+    width: 100%;
+  }
+
+  .verticalText {
+    flex: 0 1 auto;
+    transform: none;
+    font-size: 28px;
+    white-space: normal;
+    text-align: center;
+  }
+
+  .cat {
+    order: 5;
+    align-self: center;
+    width: 240px;
+    height: auto;
+  }
+
+  .rock {
+    order: 6;
+    width: calc(100% + 32px);
+    max-width: none;
+    height: auto;
+    margin: -96px -16px -40px;
+  }
+
+  .footer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 24px;
+    padding: 32px 16px 40px;
+    background: var(--color-night);
+  }
+
+  .band {
+    display: none;
+  }
+
+  .congrats {
+    order: 1;
+    font-size: 19vw;
+    white-space: nowrap;
+  }
+
+  .berlibur {
+    order: 2;
+    width: 100%;
+    padding-bottom: 16px;
+    margin-top: -12vw;
+  }
+
+  .berliburText {
+    position: static;
+    font-size: 15.5vw;
+  }
+
+  .divider {
+    position: static;
+    width: 100%;
+  }
+
+  .contact {
+    order: 3;
+    align-self: center;
+    width: 100%;
+  }
+
+  .emailPill {
+    font-size: 24px;
+  }
+
+  .otherCollection {
+    order: 4;
+    align-self: center;
+  }
+
+  .footerLink {
+    font-size: 16px;
+  }
+
+  .bottomRow {
+    order: 5;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .socials .footerLink:first-child,
+  .otherCollection .footerLink,
+  .copyright {
+    --ul-left: 0px;
+    padding-left: 0;
+  }
+
+  .copyright {
+    width: auto;
+    height: auto;
+  }
+}
