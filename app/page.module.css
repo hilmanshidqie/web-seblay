@@ -1245,3 +1245,98 @@
     height: auto;
   }
 }
+
+/* ---------- Easter eggs ---------- */
+
+/* Toast: one animation covers fade-in, hold and fade-out; its end unmounts it. */
+.eggToast {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 24px;
+  z-index: 1000;
+  width: max-content;
+  max-width: calc(100vw - 32px);
+  margin: 0 auto;
+  padding: 12px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: 40px;
+  background: var(--color-night);
+  color: var(--color-paper);
+  font-family: var(--font-mono), monospace;
+  font-size: clamp(12px, 0.4vw + 10px, 15px);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0.04em;
+  text-align: center;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+  animation: eggToast linear both;
+}
+
+@keyframes eggToast {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  8%,
+  88% {
+    opacity: 1;
+    transform: none;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Overlay: full-screen monochrome CRT panel with faint scanlines. */
+.eggOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1001;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background:
+    repeating-linear-gradient(0deg, rgba(239, 237, 233, 0.05) 0 1px, transparent 1px 3px),
+    rgba(18, 18, 18, 0.94);
+  color: var(--color-paper);
+  cursor: pointer;
+  animation: eggOverlay linear both;
+}
+
+.eggOverlay p {
+  max-width: 14ch;
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(44px, 10vw, 150px);
+  line-height: 0.95;
+  text-align: center;
+}
+
+@keyframes eggOverlay {
+  0% {
+    opacity: 0;
+  }
+  6%,
+  92% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Reduced motion: no slide or fades; the same duration still ends the message. */
+@keyframes eggHold {
+  from,
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eggToast,
+  .eggOverlay {
+    animation-name: eggHold;
+  }
+}

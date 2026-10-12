@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import styles from "@/app/page.module.css";
 import { excuseToText, generateExcuse, type Excuse } from "./excuses";
+import { showToast, useClickBurst } from "./EasterEggs";
 import { place } from "./place";
 
 const LOADING_MS = 2000;
@@ -35,6 +36,8 @@ export default function ReasonForm() {
   const fieldRef = useRef<HTMLTextAreaElement>(null);
   const loadingTimer = useRef<number | undefined>(undefined);
   const copyTimer = useRef<number | undefined>(undefined);
+  // Easter egg #4: three clicks on the loading panel within 2s, while loading.
+  const loadingClicks = useClickBurst(3, 2000);
   const cardRef = useRef<HTMLElement>(null);
   const cardTextRef = useRef<HTMLDivElement>(null);
   const cardActionsRef = useRef<HTMLDivElement>(null);
@@ -103,6 +106,7 @@ export default function ReasonForm() {
     }
 
     setStatus("loading");
+    loadingClicks.reset();
     setCopyState("idle");
     loadingTimer.current = window.setTimeout(() => {
       loadingTimer.current = undefined;
@@ -124,6 +128,11 @@ export default function ReasonForm() {
     if (!excuse) return;
     setExcuse(generateExcuse(submittedJob, excuse));
     setCopyState("idle");
+  }
+
+  function handleLoadingClick() {
+    if (status !== "loading") return;
+    if (loadingClicks.hit()) showToast("BAHKAN MESIN INI TAHU KAMU SEDANG MENUNDA.");
   }
 
   async function handleCopy() {
@@ -239,6 +248,7 @@ export default function ReasonForm() {
           style={place(812, 1052, { w: 477, h: 477, z: 28 })}
           role="status"
           aria-live="polite"
+          onClick={handleLoadingClick}
         >
           <img
             src="/assets/loading-ring.svg"

@@ -125,7 +125,18 @@ const ESSAYS: string[] = [
   "Saya sudah mencoba menyelesaikan tugas ini secara normal. Namun, setelah melakukan analisis akar masalah, saya menemukan bahwa masalah utamanya adalah saya sedang mengerjakan tugas ini.",
 ];
 
-const CLOSINGS = ["Terima kasih", "Mohon dimaklumi", "Salam hangat", "Hormat saya"];
+// Easter egg: occupations with their own private pool. The first result is
+// always the first entry; ALASAN LAIN then cycles within the same pool.
+const SECRET_JOBS: Record<string, string[]> = {
+  pengangguran: [
+    "Saya tidak sedang menganggur. Saya sedang melakukan riset lapangan tentang batas minimum produktivitas manusia.",
+    "Secara teknis saya tidak bisa izin cuti, karena saya belum pernah masuk. Namun saya tetap ingin menghormati prosedur.",
+    "Jadwal saya hari ini sangat padat: menunggu panggilan wawancara sambil memastikan kasur tetap pada tempatnya.",
+    "Saya sedang menjalani masa transisi karier yang cukup panjang. Sejauh ini, transisinya berjalan sangat stabil.",
+  ],
+};
+
+const CLOSINGS =["Terima kasih", "Mohon dimaklumi", "Salam hangat", "Hormat saya"];
 
 export type Excuse = {
   greeting: string;
@@ -154,15 +165,22 @@ function templatesFor(job: string): { matched: string[]; all: string[] } {
 export function generateExcuse(job: string, previous?: Excuse): Excuse {
   // Kept as the visitor typed it, so it reads naturally inside sentence-case prose.
   const role = job.trim().replace(/\s+/g, " ");
-  const { matched, all } = templatesFor(role);
-  // A recognised occupation gets its own excuses half the time; otherwise the
-  // whole pool is used, so every template stays reachable for everyone.
-  const pool = matched.length > 0 && Math.random() < 0.5 ? matched : all;
-  const bodies = pool.map((template) => template.replaceAll("{job}", role));
+  const secret = SECRET_JOBS[role.toLowerCase()];
+  let body: string;
+  if (secret) {
+    body = previous ? pick(secret, previous.body) : secret[0];
+  } else {
+    const { matched, all } = templatesFor(role);
+    // A recognised occupation gets its own excuses half the time; otherwise the
+    // whole pool is used, so every template stays reachable for everyone.
+    const pool = matched.length > 0 && Math.random() < 0.5 ? matched : all;
+    const bodies = pool.map((template) => template.replaceAll("{job}", role));
+    body = pick(bodies, previous?.body);
+  }
 
   return {
     greeting: `Selamat siang Komandan, saya selaku ${role} yang bermartabat dan juga taat, izin cuti.`,
-    body: pick(bodies, previous?.body),
+    body,
     closing: pick(CLOSINGS, previous?.closing),
   };
 }
