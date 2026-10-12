@@ -1,9 +1,10 @@
 /*
- * Desktop (≥ 768px): a 1:1 reproduction of the 1440 × 2348 Figma frame.
+ * Desktop (≥ 1024px): a 1:1 reproduction of the 1440 × 2348 Figma frame.
  * Every coordinate is in design pixels and multiplied by --u, which equals
  * 1px at a 1440px-wide viewport and scales proportionally at other widths.
  *
- * Mobile (< 768px): the same elements fall back into a stacked flow.
+ * Tablet and mobile (< 1024px): the same elements fall back into a stacked
+ * flow — below 1024px the scaled canvas would shrink 12px text under 9px.
  */
 
 .page {
@@ -69,13 +70,20 @@
 
 /* ---------- Header ---------- */
 
+/* Brand mark: set in the headline's condensed display face. Width follows the
+   text so it still starts at the Figma x; line-height 1 plus the vertical
+   padding keeps the original 36px box, so its vertical centre is unchanged. */
 .logo {
   display: flex;
   align-items: center;
-  justify-content: center;
-  padding: calc(10 * var(--u));
-  font-size: calc(12 * var(--u));
+  justify-content: flex-start;
+  width: max-content;
+  padding: calc(5 * var(--u)) calc(10 * var(--u));
+  font-family: var(--font-display), sans-serif;
+  font-size: calc(26 * var(--u));
   font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0.04em;
   white-space: nowrap;
 }
 
@@ -285,11 +293,55 @@
   left: calc(83 * var(--u));
   top: calc(213 * var(--u));
   width: calc(312 * var(--u));
+  /* Column + centre keeps a line wider than the box centred on the ring. */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-weight: 200;
   font-size: calc(20 * var(--u));
   line-height: normal;
   text-align: center;
   white-space: nowrap;
+}
+
+.loadingLine {
+  display: grid;
+  justify-items: center;
+}
+
+.loadingLine > * {
+  grid-area: 1 / 1;
+}
+
+.loadingMessage {
+  opacity: 0;
+  text-transform: uppercase;
+}
+
+.loadingBusy .loadingIdle {
+  visibility: hidden;
+}
+
+/* Each message holds for a quarter of the loading time; delays are inline. */
+.loadingBusy .loadingMessage {
+  animation-name: loadingMessage;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+}
+
+@keyframes loadingMessage {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  4%,
+  22% {
+    opacity: 1;
+  }
+  25% {
+    opacity: 0;
+  }
 }
 
 .loadingBusy .loadingRing {
@@ -306,34 +358,50 @@
   .loadingBusy .loadingRing {
     animation: none;
   }
+
+  /* No cycling: hold the first message for the whole wait. */
+  .loadingBusy .loadingMessage {
+    animation: none;
+  }
+
+  .loadingBusy .loadingMessage:nth-child(2) {
+    opacity: 1;
+  }
 }
 
 /* Excuse result card — Figma "after submit" frame. Inner coordinates are
-   relative to the 838 × 698 paper image. */
+   relative to the 838 × 698 paper image. When a long excuse would reach the
+   buttons, ReasonForm sets --lift (text moves up into blank paper) and then
+   --grow (card gets taller) instead of shrinking the text. */
+
+.card {
+  height: calc(var(--h) * var(--u) + var(--grow, 0px));
+}
 
 .cardPaper {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: fill;
   pointer-events: none;
 }
 
 .cardText {
   position: absolute;
   left: calc(var(--x) * var(--u));
-  top: calc(var(--y) * var(--u));
+  top: calc(var(--y) * var(--u) - var(--lift, 0px));
   display: flex;
   flex-direction: column;
   gap: calc(24 * var(--u));
   width: calc(630 * var(--u));
   transform: rotate(-4.69deg);
   transform-origin: 0 0;
-  font-family: var(--font-serif), serif;
-  font-weight: 500;
-  font-size: calc(24 * var(--u));
-  line-height: normal;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 400;
+  font-size: clamp(16px, calc(19 * var(--u)), 20px);
+  line-height: 1.55;
+  overflow-wrap: break-word;
 }
 
 .cardMuted {
@@ -351,7 +419,7 @@
 .cardActions {
   position: absolute;
   left: calc(var(--x) * var(--u));
-  top: calc(var(--y) * var(--u));
+  top: calc(var(--y) * var(--u) + var(--grow, 0px));
   width: calc(var(--w) * var(--u));
   height: calc(var(--h) * var(--u));
   display: flex;
@@ -394,6 +462,7 @@
   gap: calc(4 * var(--u));
   padding: 0;
   border: 0;
+  border-radius: calc(40 * var(--u));
   background: none;
   cursor: pointer;
 }
@@ -409,19 +478,136 @@
   transform: rotate(0.6deg);
 }
 
+/* Confirmation badge: absolutely placed, so showing/hiding it never moves the card. */
 .copyFeedback {
   position: absolute;
   left: calc(var(--x) * var(--u));
-  top: calc(var(--y) * var(--u));
-  font-weight: 100;
-  font-size: calc(12 * var(--u));
-  line-height: calc(24 * var(--u));
-  color: #6a6969;
+  top: calc(var(--y) * var(--u) + var(--grow, 0px));
+  padding: calc(2 * var(--u)) calc(12 * var(--u));
+  border: 1px solid currentColor;
+  border-radius: calc(40 * var(--u));
+  background: #f0ece2;
+  color: var(--color-ink);
+  font-weight: 400;
+  font-size: max(11px, calc(14 * var(--u)));
+  line-height: max(18px, calc(22 * var(--u)));
   white-space: nowrap;
+  box-shadow: 0 calc(2 * var(--u)) calc(6 * var(--u)) rgba(0, 0, 0, 0.12);
+  animation: feedbackIn 0.2s ease-out;
 }
 
 .copyError {
   color: var(--color-alert);
+}
+
+@keyframes feedbackIn {
+  from {
+    opacity: 0;
+    transform: translateY(calc(4 * var(--u)));
+  }
+}
+
+/* ---------- Button feedback ---------- */
+
+.cta,
+.formSubmit,
+.copyButton,
+.anotherButton,
+.anotherPill {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.ctaIcon,
+.anotherIcon {
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease;
+}
+
+/* SUBMIT stays disabled until the field has text (and while loading), so its
+   hover/active styles are scoped to :enabled and never show in those states. */
+.formSubmit:disabled {
+  cursor: not-allowed;
+}
+
+@media (hover: hover) {
+  /* MULAI CARI ALASAN: monochrome inversion, slight lift, arrow nudges right. */
+  .cta:hover {
+    background: var(--color-night);
+    border-color: var(--color-night);
+    color: var(--color-paper);
+    transform: scale(1.03);
+  }
+
+  .cta:hover .ctaIcon {
+    filter: invert(1);
+    transform: translateX(calc(4 * var(--u)));
+  }
+
+  /* SUBMIT: dark → off-white with an ink outline. */
+  .formSubmit:enabled:hover {
+    background: var(--color-paper);
+    border-color: var(--color-ink);
+    color: var(--color-ink);
+  }
+
+  .copyButton:hover {
+    background: #d9d2c1;
+    border-color: var(--color-ink);
+    transform: scale(1.04);
+  }
+
+  .anotherButton:hover {
+    transform: scale(1.04);
+  }
+
+  .anotherButton:hover .anotherPill {
+    background: var(--color-ink);
+    border-color: var(--color-ink);
+    color: #ffffff;
+  }
+
+  .anotherButton:hover .anotherIcon {
+    transform: translateX(calc(3 * var(--u))) rotate(0.6deg);
+  }
+}
+
+/* Pressed: declared after the hover rules so it wins while held. */
+.cta:active,
+.formSubmit:enabled:active,
+.copyButton:active,
+.anotherButton:active {
+  transform: scale(0.96);
+  transition-duration: 0.08s;
+}
+
+.logo:focus-visible,
+.cta:focus-visible,
+.formSubmit:focus-visible,
+.copyButton:focus-visible,
+.anotherButton:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta,
+  .formSubmit,
+  .copyButton,
+  .anotherButton,
+  .anotherPill,
+  .ctaIcon,
+  .anotherIcon {
+    transition: none;
+  }
+
+  .copyFeedback {
+    animation: none;
+  }
 }
 
 .verticalText {
@@ -630,7 +816,7 @@
 
 /* ---------- Mobile: stacked flow ---------- */
 
-@media (max-width: 767px) {
+@media (max-width: 1023px) {
   .canvas {
     --u: 1px;
     width: 100%;
@@ -666,8 +852,16 @@
 
   .menu {
     order: 2;
+    position: relative;
     width: 18px;
     height: 19.127px;
+  }
+
+  /* Invisible 44px touch target around the 18px icon. */
+  .menu::after {
+    content: "";
+    position: absolute;
+    inset: -13px;
   }
 
   .nav {
@@ -764,6 +958,7 @@
     order: 7;
     align-self: flex-end;
     width: 70%;
+    max-width: 420px;
     height: auto;
   }
 
@@ -791,9 +986,12 @@
     order: 11;
   }
 
+  /* Tablet caps (inactive on phones): keep the collage pieces in proportion. */
   .saturn {
     order: 12;
+    align-self: center;
     width: 100%;
+    max-width: 560px;
     height: auto;
   }
 
@@ -860,16 +1058,87 @@
     top: 50%;
     width: 100%;
     transform: translateY(-50%);
-    font-size: 16px;
+    font-size: clamp(11px, 3.5vw, 16px);
   }
 
-  /* Keep the card's internal composition; scale it to the column width. */
+  /*
+   * Result card: instead of shrinking text into the fixed 838 × 698 paper, the
+   * paper becomes a 9-slice border-image. The header label, corner marks,
+   * barcode and cross stay in the fixed slices; only blank paper stretches, so
+   * the card grows with the text. Slices are in source-image px (1374 × 1145);
+   * border widths are the same edges in design units (× 838 / 1374).
+   */
   .card {
-    --u: calc((100cqw - 32px) / 838);
+    --u: calc(min(100cqw - 32px, 838px) / 838);
     order: 3;
-    width: 100%;
+    align-self: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: calc(838 * var(--u));
     height: auto;
-    aspect-ratio: 838 / 698;
+    min-height: calc(698 * var(--u));
+    border-style: solid;
+    border-color: transparent;
+    border-width: calc(177 * var(--u)) calc(118 * var(--u)) calc(110 * var(--u)) calc(85 * var(--u));
+    border-image: url("/assets/excuse-card.png") 290 194 180 140 fill stretch;
+  }
+
+  .cardPaper {
+    display: none;
+  }
+
+  .cardText {
+    position: static;
+    width: auto;
+    gap: 14px;
+    padding-right: 6px;
+    /* Unrotated: on a tall block the tilt pushed lower lines into the barcode. */
+    transform: none;
+    font-size: clamp(15px, 1vw + 12px, 18px);
+    line-height: 1.55;
+  }
+
+  .cardClosing {
+    margin-top: 4px;
+  }
+
+  .cardActions {
+    position: static;
+    width: auto;
+    height: auto;
+    justify-content: flex-start;
+  }
+
+  .cardActionsRow {
+    flex: 0 1 auto;
+    flex-wrap: wrap;
+    gap: 10px;
+    transform: none;
+  }
+
+  .copyButton,
+  .anotherPill {
+    min-height: 40px;
+    padding: 8px 14px;
+    font-size: 12px;
+  }
+
+  .anotherIcon {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Sits in the paper's bottom margin, so showing it never moves the card. */
+  .copyFeedback {
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: calc(-55 * var(--u) - 12px);
+    width: max-content;
+    margin-inline: auto;
+    font-size: 13px;
+    line-height: 20px;
   }
 
   .vertical {
@@ -894,8 +1163,9 @@
 
   .rock {
     order: 6;
+    align-self: center;
     width: calc(100% + 32px);
-    max-width: none;
+    max-width: 640px;
     height: auto;
     margin: -96px -16px -40px;
   }

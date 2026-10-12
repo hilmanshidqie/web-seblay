@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   Bebas_Neue,
+  Inter,
   JetBrains_Mono,
   New_Amsterdam,
   Playfair_Display,
@@ -32,6 +33,13 @@ const playfairDisplay = Playfair_Display({
   variable: "--font-serif",
 });
 
+// Excuse card body text: a plain sans for long paragraphs.
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-sans",
+});
+
 const newAmsterdam = New_Amsterdam({
   subsets: ["latin"],
   weight: "400",
@@ -55,6 +63,7 @@ export default function RootLayout({
         waterBrush.variable,
         playfairDisplay.variable,
         newAmsterdam.variable,
+        inter.variable,
       ].join(" ")}
     >
       <body>{children}</body>

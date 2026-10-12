@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import styles from "@/app/page.module.css";
 import { excuseToText, generateExcuse, type Excuse } from "./excuses";
@@ -8,6 +8,20 @@ import { place } from "./place";
 
 const LOADING_MS = 2000;
 const COPY_FEEDBACK_MS = 1600;
+const REVEAL_MS = 500;
+// Shown one after another while loading; together they span LOADING_MS.
+const LOADING_MESSAGES = [
+  "Merumuskan alasan...",
+  "Menganalisis situasi...",
+  "Menyusun argumen...",
+  "Memeriksa tingkat urgensi...",
+];
+// Breathing room (px) kept between a long excuse and the card's buttons.
+const CARD_TEXT_GAP = 8;
+// Card width, and how far long text may move up into the blank paper under
+// "[ ALASAN HARI INI ]", both in design px.
+const CARD_WIDTH = 838;
+const CARD_MAX_LIFT = 40;
 
 type Status = "idle" | "loading" | "result";
 type CopyState = "idle" | "copied" | "error";
@@ -21,6 +35,9 @@ export default function ReasonForm() {
   const fieldRef = useRef<HTMLTextAreaElement>(null);
   const loadingTimer = useRef<number | undefined>(undefined);
   const copyTimer = useRef<number | undefined>(undefined);
+  const cardRef = useRef<HTMLElement>(null);
+  const cardTextRef = useRef<HTMLDivElement>(null);
+  const cardActionsRef = useRef<HTMLDivElement>(null);
 
   useEffect(
     () => () => {
@@ -30,9 +47,54 @@ export default function ReasonForm() {
     [],
   );
 
+  // On the desktop canvas the card has a fixed height. Rather than shrinking a
+  // long excuse, grow the card (and push the buttons down) until it clears them.
+  useLayoutEffect(() => {
+    const card = cardRef.current;
+    const text = cardTextRef.current;
+    const actions = cardActionsRef.current;
+    if (!card || !text || !actions) return;
+
+    const overlap = () =>
+      text.getBoundingClientRect().bottom - actions.getBoundingClientRect().top + CARD_TEXT_GAP;
+
+    const fit = () => {
+      card.style.setProperty("--lift", "0px");
+      card.style.setProperty("--grow", "0px");
+      if (overlap() <= 0) return;
+      // First use the blank paper under the header label, then grow the card.
+      const maxLift = (CARD_MAX_LIFT * card.offsetWidth) / CARD_WIDTH;
+      card.style.setProperty("--lift", `${Math.min(Math.ceil(overlap()), maxLift)}px`);
+      const rest = overlap();
+      if (rest > 0) card.style.setProperty("--grow", `${Math.ceil(rest)}px`);
+    };
+
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(card);
+    document.fonts?.ready.then(fit);
+    return () => observer.disconnect();
+  }, [excuse]);
+
+  // Each new excuse (first result or ALASAN LAIN) eases the whole card up into
+  // place. Animating the existing node keeps focus on the button that was used.
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const reveal = card.animate(
+      [
+        { opacity: 0, transform: "translateY(16px)" },
+        { opacity: 1, transform: "none" },
+      ],
+      { duration: REVEAL_MS, easing: "cubic-bezier(0.2, 0.7, 0.2, 1)" },
+    );
+    return () => reveal.cancel();
+  }, [excuse]);
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (status === "loading") return;
+    // The pending timer also guards against a second submit landing before re-render.
+    if (status === "loading" || loadingTimer.current !== undefined) return;
 
     const job = occupation.trim();
     if (!job) {
@@ -43,6 +105,7 @@ export default function ReasonForm() {
     setStatus("loading");
     setCopyState("idle");
     loadingTimer.current = window.setTimeout(() => {
+      loadingTimer.current = undefined;
       setSubmittedJob(job);
       setExcuse(generateExcuse(job));
       setStatus("result");
@@ -120,6 +183,7 @@ export default function ReasonForm() {
 
       {status === "result" && excuse ? (
         <article
+          ref={cardRef}
           className={`${styles.abs} ${styles.sized} ${styles.card}`}
           style={place(562, 1026, { w: 838, h: 698, z: 35 })}
           aria-live="polite"
@@ -132,12 +196,12 @@ export default function ReasonForm() {
             height={698}
             className={styles.cardPaper}
           />
-          <div className={styles.cardText} style={place(96, 240.28)}>
+          <div ref={cardTextRef} className={styles.cardText} style={place(96, 240.28)}>
             <p className={styles.cardMuted}>{excuse.greeting}</p>
             <p className={styles.cardBody}>{excuse.body}</p>
             <p className={`${styles.cardMuted} ${styles.cardClosing}`}>{excuse.closing}</p>
           </div>
-          <div className={styles.cardActions} style={place(434, 569, { w: 235.308, h: 52.304 })}>
+          <div ref={cardActionsRef} className={styles.cardActions} style={place(434, 569, { w: 235.308, h: 52.304 })}>
             <div className={styles.cardActionsRow}>
               <button type="button" className={styles.copyButton} onClick={handleCopy}>
                 COPY
@@ -184,9 +248,24 @@ export default function ReasonForm() {
             className={styles.loadingRing}
           />
           <p className={styles.loadingText}>
-            TUNGGU SESAAT
-            <br />
-            ALASAN SEDANG DIPIKIRKAN..
+            <span>TUNGGU SESAAT</span>
+            {/* All lines share one grid cell, so swapping them never resizes the panel. */}
+            <span className={styles.loadingLine}>
+              <span className={styles.loadingIdle}>ALASAN SEDANG DIPIKIRKAN..</span>
+              {LOADING_MESSAGES.map((message, index) => (
+                <span
+                  key={message}
+                  className={styles.loadingMessage}
+                  style={{
+                    animationDuration: `${LOADING_MS}ms`,
+                    animationDelay: `${(index * LOADING_MS) / LOADING_MESSAGES.length}ms`,
+                  }}
+                  aria-hidden="true"
+                >
+                  {message}
+                </span>
+              ))}
+            </span>
           </p>
         </div>
       )}

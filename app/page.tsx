@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 
 /** `sizes` hint for an image that is `w` design pixels wide on the canvas. */
 const sizesFor = (w: number) =>
-  `(min-width: 768px) ${Math.round((w / 1440) * 100)}vw, 100vw`;
+  `(min-width: 1024px) ${Math.round((w / 1440) * 100)}vw, 100vw`;
 
 export default function HomePage() {
   return (
