@@ -1,4 +1,5 @@
 import Image from "next/image";
+import CollageMotion from "@/components/CollageMotion";
 import EasterEggs, { Logo } from "@/components/EasterEggs";
 import ReasonForm from "@/components/ReasonForm";
 import { place } from "@/components/place";
@@ -75,6 +76,7 @@ export default function HomePage() {
                 sizes={sizesFor(680)}
                 className={`${styles.abs} ${styles.sized} ${styles.cover} ${styles.saturn}`}
                 style={place(919, 535, { w: 680, h: 453, z: 2 })}
+                data-motion="saturn"
               />
               <Image
                 src="/assets/mountains.png"
@@ -95,6 +97,7 @@ export default function HomePage() {
                 sizes={sizesFor(366)}
                 className={`${styles.abs} ${styles.sized} ${styles.cover} ${styles.tv}`}
                 style={place(1138, 321, { w: 366, h: 294, z: 4 })}
+                data-motion="tv"
               />
               <Image
                 src="/assets/woman.png"
@@ -200,6 +203,7 @@ export default function HomePage() {
                 className={`${styles.abs} ${styles.sized} ${styles.rotBox} ${styles.handArrow}`}
                 style={place(552, 553, { w: 190.324, h: 190.324, z: 23 })}
                 aria-hidden="true"
+                data-motion="arrow"
               >
                 <img
                   src="/assets/hand-arrow.svg"
@@ -343,6 +347,7 @@ export default function HomePage() {
       </div>
       {/* Outside .page: its container-type would trap fixed-position overlays. */}
       <EasterEggs />
+      <CollageMotion />
     </>
   );
 }

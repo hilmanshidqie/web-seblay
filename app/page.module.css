@@ -1340,3 +1340,42 @@
     animation-name: eggHold;
   }
 }
+
+/* ---------- Collage motion (desktop pointer only, see CollageMotion) ---------- */
+
+/* CRT glitch: ~200ms of jitter and contrast, then back to the untouched image. */
+.tvGlitch {
+  animation: tvGlitch 0.2s steps(1, end);
+}
+
+@keyframes tvGlitch {
+  0% {
+    translate: 3px 0;
+    filter: contrast(1.35) brightness(1.08);
+  }
+  25% {
+    translate: -2px 1px;
+    filter: contrast(1.2) brightness(0.92);
+    opacity: 0.88;
+  }
+  50% {
+    translate: 2px -1px;
+    filter: contrast(1.4);
+  }
+  75% {
+    translate: -1px 0;
+    filter: none;
+    opacity: 0.95;
+  }
+  100% {
+    translate: none;
+    filter: none;
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tvGlitch {
+    animation: none;
+  }
+}
